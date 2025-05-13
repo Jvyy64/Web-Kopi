@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Kopi Nusantara</title>
+  </head>
+  <body>
+    <header>
+      <div class="header-container">
+        <h1>Kopi Nusantara</h1>
+        <div class="auth-container">
+          <div class="auth-menu" id="authMenu">
+            <a href="#" onclick="showLogin()" class="auth-btn login-btn">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <a href="#" onclick="showRegister()" class="auth-btn register-btn">
+              <i class="fas fa-user-plus"></i> Register
+            </a>
+          </div>
+          <div class="user-info hidden" id="userInfo">
+            <span class="username-display" id="usernameDisplay"></span>
+            <a href="#" onclick="logout()" class="auth-btn logout-btn">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <nav id="mainNav">
+      <!-- Navigation buttons will be added by JavaScript -->
+    </nav>
+
+    <main>
+      <!-- Beranda Section -->
+      <div id="beranda" class="section visible">
+        <!-- Best Seller Carousel -->
+        <div class="best-seller-container">
+          <h2>Menu Best Seller</h2>
+          <div class="carousel">
+            <button class="carousel-button prev" onclick="moveCarousel(-1)">
+              &#10094;
+            </button>
+            <div class="carousel-track-container">
+              <div class="carousel-track" id="carouselTrack"></div>
+            </div>
+            <button class="carousel-button next" onclick="moveCarousel(1)">
+              &#10095;
+            </button>
+          </div>
+        </div>
+
+        <h2>Menu Kopi Kami</h2>
+        <div class="filter-container">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Cari kopi..."
+            oninput="renderProduk()"
+          />
+          <select id="filterKategori" onchange="renderProduk()">
+            <option value="">Semua Kategori</option>
+            <option value="Kopi">Kopi</option>
+            <option value="Non Kopi">Non Kopi</option>
+            <option value="Snack">Snack</option>
+          </select>
+          <select id="sortHarga" onchange="renderProduk()">
+            <option value="">Urutkan Harga</option>
+            <option value="asc">Termurah</option>
+            <option value="desc">Termahal</option>
+          </select>
+        </div>
+        <div class="product-list" id="daftarProduk"></div>
+      </div>
+
+      <!-- Kontak Section -->
+      <div id="kontak" class="section">
+        <div class="contact-container">
+          <h2>Hubungi Kami</h2>
+          <p class="contact-description">
+            Butuh bantuan atau memiliki pertanyaan? Tim kami siap membantu Anda
+            melalui kontak berikut:
+          </p>
+
+          <div class="contact-methods">
+            <div class="contact-method whatsapp">
+              <div class="contact-icon">
+                <i class="fab fa-whatsapp"></i>
+              </div>
+              <h3>WhatsApp</h3>
+              <p>
+                <a href="https://wa.me/6281212153794" target="_blank"
+                  >0812-1215-3794</a
+                >
+              </p>
+              <button
+                onclick="window.open('https://wa.me/6281212153794', '_blank')"
+              >
+                <i class="fas fa-comment-dots"></i> Chat Sekarang
+              </button>
+            </div>
+
+            <div class="contact-method instagram">
+              <div class="contact-icon">
+                <i class="fab fa-instagram"></i>
+              </div>
+              <h3>Instagram</h3>
+              <p>
+                <a href="https://instagram.com/raihannwahyuu" target="_blank"
+                  >@kopinusantara</a
+                >
+              </p>
+              <button
+                onclick="window.open('https://instagram.com/raihannwahyuu', '_blank')"
+              >
+                <i class="fas fa-heart"></i> Follow
+              </button>
+            </div>
+
+            <div class="contact-method facebook">
+              <div class="contact-icon">
+                <i class="fab fa-facebook-f"></i>
+              </div>
+              <h3>Facebook</h3>
+              <p>
+                <a href="https://facebook.com" target="_blank"
+                  >Kopi Nusantara</a
+                >
+              </p>
+              <button onclick="window.open('https://facebook.com', '_blank')">
+                <i class="fas fa-thumbs-up"></i> Like
+              </button>
+            </div>
+          </div>
+
+          <div class="contact-info">
+            <h3>Informasi Tambahan</h3>
+            <p>
+              <i class="fas fa-clock"></i> Jam Operasional: Senin-Minggu, 08:00
+              - 20:00 WIB
+            </p>
+            <p>
+              <i class="fas fa-map-marker-alt"></i> Alamat: Jl. Aroma Kopi No.
+              123, Kota Bandung
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keranjang Section -->
+      <div id="keranjang" class="section">
+        <h2>Keranjang Belanja</h2>
+        <div class="cart-container">
+          <div class="cart-items" id="daftarKeranjang"></div>
+
+          <div class="cart-summary">
+            <h3>Ringkasan Belanja</h3>
+            <div class="total-payment">
+              <span>Total Pembayaran</span>
+              <span id="totalPembayaran">Rp 0</span>
+            </div>
+
+            <h3>Data Pembeli</h3>
+            <form id="checkoutForm">
+              <div class="form-group">
+                <label for="nama">Nama Pembeli</label>
+                <input
+                  type="text"
+                  id="nama"
+                  placeholder="Masukkan nama pembeli"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="alamat">Catatan</label>
+                <textarea
+                  id="alamat"
+                  rows="3"
+                  placeholder="Catatan untuk pesanan (opsional)"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="metodePembayaran">Metode Pembayaran</label>
+                <select id="metodePembayaran" required>
+                  <option value="">Pilih metode pembayaran</option>
+                  <option value="Cash">Cash (Bayar di Kasir)</option>
+                  <option value="QRIS">QRIS</option>
+                </select>
+              </div>
+
+              <button type="button" onclick="prosesCheckout()">
+                <i class="fas fa-shopping-bag"></i> Proses Checkout
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimoni Section -->
+      <div id="testimoni" class="section">
+        <h2>Testimoni Pelanggan</h2>
+        <div class="testimonial-container">
+          <form id="testimoniForm" onsubmit="submitTestimoni(event)">
+            <h3>Beri Testimoni</h3>
+            <div class="form-group">
+              <label for="namaTesti">Nama Anda</label>
+              <input
+                type="text"
+                id="namaTesti"
+                placeholder="Masukkan nama"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Rating</label>
+              <div class="star-rating">
+                <input
+                  type="radio"
+                  id="star5"
+                  name="rating"
+                  value="5"
+                  required
+                />
+                <label for="star5">&#9733;</label>
+
+                <input type="radio" id="star4" name="rating" value="4" />
+                <label for="star4">&#9733;</label>
+
+                <input type="radio" id="star3" name="rating" value="3" />
+                <label for="star3">&#9733;</label>
+
+                <input type="radio" id="star2" name="rating" value="2" />
+                <label for="star2">&#9733;</label>
+
+                <input type="radio" id="star1" name="rating" value="1" />
+                <label for="star1">&#9733;</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="pesanTesti">Pesan Testimoni</label>
+              <textarea
+                id="pesanTesti"
+                rows="4"
+                placeholder="Bagikan pengalaman Anda"
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit">
+              <i class="fas fa-paper-plane"></i> Kirim Testimoni
+            </button>
+          </form>
+
+          <div class="testimonial-list">
+            <h3>Testimoni Terbaru</h3>
+            <div id="daftarTestimoni"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tentang Kami Section -->
+      <div id="tentang" class="section">
+        <div class="about-container">
+          <h2>Tentang Kopi Nusantara</h2>
+
+          <div class="about-philosophy">
+            <h3>Filosofi Kami</h3>
+            <p>
+              Kopi Nusantara hadir dengan filosofi untuk menghadirkan cita rasa
+              kopi asli Indonesia dengan kualitas terbaik. Kami percaya bahwa
+              setiap tegukan kopi harus membawa cerita dan kehangatan yang khas
+              dari tanah Nusantara.
+            </p>
+            <p>
+              "Dari biji pilihan hingga ke cangkir Anda" - itulah prinsip yang
+              kami pegang teguh dalam setiap proses penyajian kopi.
+            </p>
+          </div>
+
+          <div class="about-grid">
+            <div class="about-history">
+              <h3>Sejarah Kami</h3>
+              <p>
+                Berdiri sejak 2015, Kopi Nusantara dimulai dari kecintaan
+                terhadap kopi lokal Indonesia yang kaya akan cita rasa. Dari
+                sebuah kedai kecil di Bandung, kini kami berkembang dengan
+                bangga menyajikan kopi dari berbagai daerah di Indonesia.
+              </p>
+              <img
+                src="https://images.unsplash.com/photo-1445116572660-236099ec97a0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                alt="Kedai Kopi"
+              />
+            </div>
+
+            <div class="about-vision">
+              <h3>Visi & Misi</h3>
+              <div class="vision">
+                <h4>Visi</h4>
+                <p>
+                  Menjadi pelopor kopi Nusantara yang mengedepankan kualitas,
+                  keaslian, dan kelestarian lingkungan.
+                </p>
+              </div>
+              <div class="mission">
+                <h4>Misi</h4>
+                <ul>
+                  <li>Menyajikan kopi berkualitas dari petani lokal</li>
+                  <li>Melestarikan kekayaan kopi Indonesia</li>
+                  <li>Memberikan pengalaman menikmati kopi yang autentik</li>
+                  <li>Mendukung pertanian kopi berkelanjutan</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="about-process">
+            <h3>Proses Kami</h3>
+            <div class="process-steps">
+              <div class="process-step">
+                <div class="process-icon">
+                  <i class="fas fa-seedling"></i>
+                </div>
+                <h4>Biji Pilihan</h4>
+                <p>Dipilih dari perkebunan terbaik di Indonesia</p>
+              </div>
+
+              <div class="process-step">
+                <div class="process-icon">
+                  <i class="fas fa-fire"></i>
+                </div>
+                <h4>Pemanggangan</h4>
+                <p>Dipanggang dengan teknik tradisional</p>
+              </div>
+
+              <div class="process-step">
+                <div class="process-icon">
+                  <i class="fas fa-mug-hot"></i>
+                </div>
+                <h4>Penyajian</h4>
+                <p>Disajikan dengan penuh keahlian</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tim Kami Section -->
+          <div class="about-team">
+            <h3>Tim Kami</h3>
+            <div class="team-members">
+              <div class="team-member">
+                <img src="mukarepan.jpg" alt="Founder" />
+                <h4>Raihan Wahyu</h4>
+                <p class="position">Founder & CEO</p>
+                <p class="bio">
+                  Pecinta kopi dengan pengalaman 10 tahun di industri kopi
+                  spesialti.
+                </p>
+              </div>
+
+              <div class="team-member">
+                <img src="mukarepan.jpg" alt="Co-Founder" />
+                <h4>Sarah Fitriani</h4>
+                <p class="position">Co-Founder & Head Roaster</p>
+                <p class="bio">
+                  Ahli pemanggangan kopi dengan sertifikasi internasional.
+                </p>
+              </div>
+
+              <div class="team-member">
+                <img src="mukarepan.jpg" alt="Head Barista" />
+                <h4>Dewi Lestari</h4>
+                <p class="position">Head Barista</p>
+                <p class="bio">
+                  Juara nasional barista tahun 2020 dengan spesialisasi latte
+                  art.
+                </p>
+              </div>
+
+              <div class="team-member">
+                <img src="mukarepan.jpg" alt="Marketing" />
+                <h4>Budi Santoso</h4>
+                <p class="position">Marketing Director</p>
+                <p class="bio">
+                  Ahli pemasaran dengan fokus pada pengembangan merek kopi
+                  lokal.
+                </p>
+              </div>
+
+              <div class="team-member">
+                <img src="mukarepan.jpg" alt="Supplier" />
+                <h4>Agus Setiawan</h4>
+                <p class="position">Head of Supplier Relations</p>
+                <p class="bio">
+                  Menjalin hubungan dengan petani kopi terbaik di seluruh
+                  Indonesia.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login Section -->
+      <div id="loginSection" class="section">
+        <div class="login-container">
+          <h2>Login Akun</h2>
+          <form id="loginForm" onsubmit="login(event)">
+            <div class="form-group">
+              <input
+                type="text"
+                id="loginUsername"
+                placeholder="Username"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <input
+                type="password"
+                id="loginPassword"
+                placeholder="Password"
+                required
+              />
+            </div>
+
+            <button type="submit">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+
+            <p class="register-link">
+              Belum punya akun?
+              <a href="#" onclick="showRegister(); return false;"
+                >Daftar disini</a
+              >
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Register Section -->
+      <div id="registerSection" class="section">
+        <div class="register-container">
+          <h2>Buat Akun</h2>
+          <form id="registerForm" onsubmit="register(event)">
+            <div class="form-group">
+              <input
+                type="text"
+                id="regUsername"
+                placeholder="Username"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <input
+                type="password"
+                id="regPassword"
+                placeholder="Password"
+                required
+              />
+            </div>
+
+            <button type="submit">
+              <i class="fas fa-user-plus"></i> Daftar Sekarang
+            </button>
+
+            <p class="login-link">
+              Sudah punya akun?
+              <a href="#" onclick="showLogin(); return false;">Login disini</a>
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <!-- QRIS Modal -->
+      <div id="qrisModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Pembayaran QRIS</h3>
+            <button
+              onclick="document.getElementById('qrisModal').classList.add('hidden')"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <img src="Qris.jpg" alt="QR Code" />
+            <p>
+              Scan QR code di atas menggunakan aplikasi e-wallet Anda untuk
+              menyelesaikan pembayaran
+            </p>
+            <button onclick="completeQRISPayment()">
+              <i class="fas fa-check-circle"></i> Lanjutkan
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-container">
+        <div class="footer-grid">
+          <div class="footer-about">
+            <h3>Kopi Nusantara</h3>
+            <p>
+              Menyajikan berbagai varian kopi berkualitas dari seluruh Nusantara
+              dengan cita rasa autentik dan nikmat.
+            </p>
+          </div>
+
+          <div class="footer-contact">
+            <h3>Hubungi Kami</h3>
+            <ul>
+              <li><i class="fas fa-phone"></i> 0812-1215-3794</li>
+              <li><i class="fas fa-envelope"></i> info@kopinusantara.com</li>
+              <li>
+                <i class="fas fa-map-marker-alt"></i> Jl. Aroma Kopi No. 123,
+                Kota Bandung
+              </li>
+            </ul>
+          </div>
+
+          <div class="footer-social">
+            <h3>Ikuti Kami</h3>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-whatsapp"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-copyright">
+          <p>&copy; 2025 Kopi Nusantara. Semua hak cipta dilindungi.</p>
+        </div>
+      </div>
+    </footer>
+    <!-- Notification Element -->
+    <div id="notification" class="notification"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
